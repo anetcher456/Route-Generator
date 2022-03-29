@@ -1,0 +1,785 @@
+---
+title: "Roermond Factsheet"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: 
+      version: 4
+      bg: "#ffffff"
+      fg: "#1c1c1c"
+      primary: "#ff7878"
+      navbar-bg: "#00CC00"
+      base_font: 
+        google: Prompt
+      heading_font:
+        google: Sen
+      code_font:
+        google: 
+          family: JetBrains Mono
+          local: false
+    orientation: columns
+    vertical_layout: fill
+     
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(readxl)
+library(tidyverse)
+library(ggmap)
+library(odbc)
+library(DT)
+library(lubridate)
+library(forcats)
+library(plotrix)
+library(repr)
+library(plotly)
+```
+
+```{r}
+
+```
+
+
+
+```{r}
+con<-dbConnect(odbc(),Driver = "SQL Server",Server = "LAPTOP-C62I4TTP\\SQLEXPRESS",Database = "Factsheet",Trusted_Connection = "True")
+```
+
+```{r}
+xx<-dbGetQuery(con,'select * from dbo.Route')
+```
+
+
+
+
+
+```{r}
+ss<-dbGetQuery(con,'select * from dbo.Customer')
+```
+
+
+Introduction {data-icon="fa-door-open"}
+=====================================
+
+
+
+
+
+Column {data-width=600}
+-----------------------------------------------------------------------
+
+
+
+
+
+
+
+
+### Customers
+
+```{r}
+valueBox(100,color = "aqua",icon="fas fa-user-friends")
+```
+
+
+```{r}
+
+```
+
+
+### Our customer data
+
+```{r}
+sss<- ss%>%select(FirstName,LastName,DOB,Gender,Nationality)
+datatable(sss)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+Column {data-width=700} 
+-----------------------------------------------------------------------
+
+
+
+
+
+
+
+
+### Places
+
+
+
+
+
+```{r}
+valueBox(12,color = "yellow",icon="fa-monument")
+```
+
+
+### Map of Roermond
+
+```{r}
+get_stamenmap(bbox = c(left = 5.9410, bottom = 51.1696, right =
+6.0671, top = 51.2195), zoom = 14, maptype = "terrain")%>%ggmap()
+```
+
+
+
+### Description
+
+
+
+
+ 
+Roermond is the city centre is full of history and culture, and is designated as a conservation area. The city has a list of protected buildings, like churches and guild houses, its skyline dominated by the St. Christopher Cathedral, dating back to the 15th Century and the Munster Church, build in the 13th Century.
+
+These were just some aspects of the historical sign in the city of Roermond, it is also known as the largest witch  trial in the Netherlands since it resulted in the deaths of sixty-four people by flames. There is also a History House, which is a museum dedicated to Roermond's historical evolution.
+
+Accordingt o what we discovered, Roermond is a city steeped in history, from its origins to the events that have taken place there. History tourists should keep an eye on this place because it has such a compelling and intriguing tale.
+
+ 
+Another element of Roemond is its relvence, which is based on the Design Outlet, which attracts millions of tourists each year and houses 150 stores representing 200 brands such as Gucci, Prada, and others. Aside from that, the city is brimming with little businesses that specialize in used or antique clothing. These shops can be located all around the city. Cafes are another important aspect of the city; from Asian cuisine to sweets, there are a variety of cafes to choose from. For example, Dutch Home is a sweet shop that specialises in macaroons, which are delectable chewy shredded coconut biscuits that originated in France. Roermond is surrounded by parks and has a laguna right near the city. Parks are a significant aspect of the city, with a range of parks where locals and tourists can walk or spend their leisure time. The Dagstrand De Weerd Park, for example, is well-known for its waterfall and overall elegance, and it is also a tourist destination.
+ 
+Roermond, despite its long history and importance, is currently suffering certain difficulties. These concerns are exacerbated by the exodus of young people, economic concerns, and pedestrian and vehicular traffic.These are the major difficulties that the customer presented to us, thus our goal for the duration of the project was to include a viable solution for these concerns. With our route generator website, we acknowledged young people's worries and the economy, but we focused less on traffic problems. With such a focus, we provided entertainment for our customers in the form of a generation of possible locations related to places we used in our website, then additional advertisement pages based on the behavior of locations we used in the website, each location provided under the categories that they belong to, and we gained around four categories related to night life, food, cultural places, and activities. We also included many other features to the website that are related to such difficulties, such as a traffic pop-up that focuses on transportation in Roermond for our visitors' convenience.
+ 
+ 
+This Factsheet will include critical performance metrics gleaned from our workflow, as well as information on our customer and the district as a whole.We concentrated on determining a collection of helpful information to exhibit in this factsheet, including tops of our locations and additions, as well as viewable details about our clients, such as nationality and gender. And for the key performance indicators, we showed the duration of our process based on three months of work based on client growth, availability of spots, percentage structure for satisfactory levels, and many other project development targets that we set for ourselves. Furthermore, this factsheet was built using mockup data that may or may not entirely connect with the targets presented in a balanced scorecard; it is based on only 100 customers that we produced.
+
+
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+
+
+
+
+### Roads
+
+```{r}
+valueBox(25,color = "blueviolet",icon = "fa-road")
+```
+
+
+### Our used locations
+ 
+```{r}
+#xx%>%group_by(Dificulty,Route_type)%>%ggplot(aes(x=Route_type,fill=Dificulty))+ geom_bar()+xlab("Difficulty")+
+#ylab("Number of routes")+ guides(fill=guide_legend(title="Route type"))
+rr<-dbGetQuery(con,"select * from dbo.Location")
+rrrr<-rr%>%select(LocationName,LocationAddress)
+datatable(rrrr)
+```
+
+
+
+
+
+
+
+
+
+
+
+Customer {data-icon="fa-user-friends"}
+=====================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+Column {data-width=550}
+-----------------------------------------------------------------------
+
+
+
+### Customers joined per 4 months
+
+```{r}
+valueBox(70,color = "deepskyblue",icon="fas fa-user-check")
+```
+
+
+```{r}
+ss1<-dbGetQuery(con,"select datediff(YEAR,DOB,Getdate()) as age,RegistrationDate,Nationality,
+iif(datediff(YEAR,DOB,Getdate())<=18,'<18',
+iif (datediff(YEAR,DOB,Getdate())>18 and datediff(YEAR,DOB,Getdate())<=21,'19-21',
+iif (datediff(YEAR,DOB,Getdate())>21 and datediff(YEAR,DOB,Getdate())<=25,'22-25',
+iif (datediff(YEAR,DOB,Getdate())>=26,'26+','unknown')))) as agegroup
+from dbo.Customer
+")
+```
+
+
+
+
+### Top 5 nationalities with the gender display
+
+```{r}
+#put labels on values there
+sss1<-ss%>%
+  group_by(Nationality)%>%
+  summarise(count=n())%>%
+  arrange(desc(count))%>%
+  head(5)
+sss1 <-left_join(sss1,ss)%>%
+  group_by(Nationality,Gender)%>%
+  summarise(c=n())
+txt<-c(sss1$c)
+  sss1%>%ggplot(aes(x=Nationality,y=c,fill=Gender))+ 
+  geom_col(position="dodge")+
+  aes(fill=Gender)+
+  scale_fill_manual(values = c("hot pink","light blue"))+
+  labs(X="Nationality Type", y="Number of customers",    subtitle = "Top 5 nationalities with a split by two genders based on the amount of users.")+
+  geom_label(aes(label=txt),
+                 color="black",
+                fontface="bold",
+             position=position_dodge(0.9))+ theme_linedraw()
+ 
+  
+  
+```
+
+
+```{r}
+#ss$RegistrationDate<-months(as.Date(ss$RegistrationDate))
+#ss$RegistrationDate
+```
+
+
+
+
+### Age groups' of customers
+
+```{r}
+ss1<-ss1%>%group_by(agegroup)%>%summarise(c=n())
+txt<-c(ss1$c)
+ss1%>%ggplot(aes(x=agegroup,y=c))+
+geom_col()+
+aes(fill=agegroup)+
+scale_fill_manual(values = c("darkcyan","coral","navy","seagreen"))+
+ylab("Number of customers")+ xlab("Age group")+labs(subtitle="Amount of customers that joined the website with a division be their age groups.")+ geom_label(label=txt,
+            fontface="bold"                                                                                                                                                   )+ theme_linedraw()
+```
+
+
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+
+### Customers satisfied with the level of work
+
+
+```{r}
+valueBox(50,color = "hotpink",icon="fas fa-window-restore")
+```
+
+
+
+
+
+
+
+
+
+```{r}
+#change data 
+#location add date
+```
+
+
+### Amount of customers per their nationality
+
+```{r}
+ssss<-ss%>%group_by(Nationality)%>%
+  summarise(count=n())%>%
+  arrange(desc(count))
+datatable(ssss)
+```
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+
+
+### Young customers joined per 3 months
+
+```{r}
+valueBox(54,color = "orange",icon="fas fa-user-astronaut")
+```
+
+
+
+### Number of active users per 8 months
+
+
+```{r}
+ss<-dbGetQuery(con,'select * from dbo.Customer')
+ss$LastLogInDate<-months(as.Date(ss$LastLogInDate))
+ss$LastLogInDate<-as.factor(ss$LastLogInDate)
+lv<-c("March","April","May","June","July","August","September")
+ss$LastLogInDate<-factor(ss$LastLogInDate,levels=lv)
+ss<-ss%>%group_by(LastLogInDate)%>%summarise(c=n())
+txt<-c(ss$c)
+ss%>%ggplot(aes(x=LastLogInDate,y=c))+
+aes(fill=LastLogInDate)+
+scale_fill_manual(values = c("navy","darkmagenta","blue","blueviolet","orchid","hotpink","deeppink"))+
+geom_col()+ylab("Number of active users")+ xlab("Last login date")+
+labs(subtitle="Amount of customer with their last login data by months.")+ geom_label(label=txt,
+                                                                                      color="black",fontface="bold")+ theme_linedraw()
+```
+
+
+
+
+
+### Number of customers that joined our website  based on their gender
+
+```{r}
+ss3<-dbGetQuery(con,'select CustID,RegistrationDate,Gender from dbo.Customer')
+ss3$RegistrationDate<-as.factor(ss3$RegistrationDate)
+ss3$RegistrationDate<-months(as.Date(ss3$RegistrationDate))
+lv<-c("March","April","May","June","July","August","September")
+ss3$RegistrationDate<-factor(ss3$RegistrationDate,levels=lv)
+ss3 <-ss3%>%group_by(RegistrationDate,Gender)%>%
+  summarise(c=n())
+txt<-c(ss3$c)
+ ss3%>% ggplot(aes(y=RegistrationDate,x=c,fill=Gender))+ 
+  geom_col(position="dodge")+
+   geom_label(label=txt,
+              color="black",
+            fontface="bold")+
+  facet_wrap(~Gender)+
+  aes(fill=Gender)+
+  scale_fill_manual(values = c("red","gold"))+
+  ylab("Registration date")+ xlab("Number of joined customers")+
+  labs(subtitle = "Amount of customer with a separation by gender based by months.")+ theme_linedraw()
+
+```
+
+
+
+
+District {data-icon="fa-globe"}
+=====================================
+
+
+
+
+
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+
+
+### Route Types
+
+```{r}
+valueBox(6,color = "red",icon="fas fa-hand-point-up")
+```
+
+
+
+
+### Top 5 locations
+
+```{r}
+aa<-dbGetQuery(con,"select l.LocationName,rl.RouteID
+               from dbo.Location as l
+               join dbo.Route_Location as rl
+               on l.LocationID=rl.LocationID")
+aa$LocationName<-as.factor(aa$LocationName)
+aa<-aa%>%
+  group_by(LocationName)%>%
+  summarise(c=n())%>%
+  arrange(desc(c))%>%
+  head(5)
+txt<-c(aa$c)
+  aa%>%ggplot(aes(x=c,y=fct_reorder(LocationName,c)))+ 
+  aes(fill=LocationName)+
+  scale_fill_manual(values = c("turquoise","darkcyan","cyan","deepskyblue","royalblue"))+
+  geom_col()+xlab("Amount of routes per location")+ ylab("Location Name")+
+  labs(subtitle="Top 5 locations based on the amount of routes that were created.")+
+  geom_label(label=txt,
+             color="black",
+            fontface="bold")+ theme_bw()
+```
+
+
+
+
+
+
+
+
+```{r}
+#maybe put add names instead of numebrs, check the duration
+#tt<-dbGetQuery(con,"select * from dbo.Location_Add")
+#ttt<-tt%>%group_by(AddID)%>%arrange(desc(Duration))%>%head(5)
+#ttt$Add_name<-as.factor(ttt$Add_name)
+#ttt$AddID<-as.factor(ttt$AddID)
+#ttt$Duration<-as.factor(ttt$Duration)
+#ttt%>%ggplot(aes(x=AddID,y=Duration))+ 
+  #geom_col()+
+ # aes(fill=Duration)+
+  #scale_fill_manual(values = c("violet","light blue","lightcoral","palegreen"))+
+  #labs(X="Add ID",    subtitle = "This graph displays the duration of top 5 adds, based on the longest to shortest.")
+```
+
+
+
+
+### Amount of routes per location
+
+
+```{r}
+pp<-dbGetQuery(con,"select l.LocationName,rl.RouteID,r.Dificulty
+               from dbo.Location as l
+               join dbo.Route_Location as rl
+               on l.LocationID=rl.LocationID
+               join dbo.Route as r
+               on rl.RouteID=r.RouteID
+               ")
+pp$LocationName<-as.factor(pp$LocationName)
+
+pp1<-pp%>%group_by(LocationName)%>%summarise(Number_of_routes=n())
+txt<-c(pp1$Number_of_routes)
+pp1%>%ggplot(aes(x=Number_of_routes,LocationName))+
+  geom_col()+
+  xlab("Number of routes")+ylab("Location Name")+labs(subtitle=" Here is a display of all locations used in the website.")+
+  geom_label(label=txt,
+             color="black",
+                fontface="bold")+ theme_bw()
+#number of routes change
+```
+
+
+
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+
+### Location Difficulty
+
+```{r}
+valueBox(3,color = "lime",icon="fas fa-map-pin")
+```
+
+
+
+
+
+
+
+### Routes information
+
+```{r}
+zz<-dbGetQuery(con,"select d.Dificulty,d.Route_type,s.LocationName
+               from dbo.Route as d
+               join dbo.Route_Location as rl
+               on d.RouteID=rl.RouteID
+               join dbo.Location as s
+               on rl.LocationID=s.LocationID")
+datatable(zz)
+```
+
+
+
+
+
+
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+
+
+### Pop-ups
+
+```{r}
+valueBox(12,color = "darkviolet",icon="fas fa-address-card")
+```
+
+
+### Locations types by their difficulty
+
+
+```{r}
+xx<- xx%>%group_by(Dificulty,Route_type)%>%summarise(c=n())
+txt<-c(xx$c)  
+  xx%>%ggplot(aes(x=Dificulty,y=c,fill=Route_type))+ 
+  geom_col(position = "dodge")+
+ aes(fill=Route_type)+
+  scale_fill_manual(values = c("olivedrab","forestgreen","springgreen","limegreen","green","greenyellow"))+
+  ylab("Number of locations")+ xlab("Location dificulty")+
+  labs( subtitle= "This graph represents location difficultry within the route type used in our website.")+
+    geom_label(aes(label=txt),
+               color="black",
+            fontface="bold",position=position_dodge(0.9))+ theme_bw()
+#swap names
+```
+
+
+### Top 5 adds baseed on the customers' interests.
+
+```{r}
+tt<-dbGetQuery(con,"select * from dbo.Location_Add")
+ 
+
+tt$Add_name<-as.factor(tt$Add_name)
+ 
+
+tt<-tt%>%arrange(desc(Number_of_customers))%>%head(5)
+txt<-c(tt$Number_of_customers)
+tt%>%ggplot(aes(Number_of_customers,fct_reorder(Add_name,Number_of_customers)))+
+aes(fill=Add_name)+
+scale_fill_manual(values = c("coral","darkorange","gold","yellow","chocolate"))+
+geom_col()+
+ylab("Adds' name")+ xlab("Number of customers")+
+  labs(subtitle="A representation of the adds and numbers of customers' clicks.")+
+  geom_label(label=txt,
+             color="black",
+            fontface="bold")+ theme_bw()
+  
+```
+
+
+
+
+
+KPIs {data-icon="fa-key"}
+=====================================
+
+
+
+
+
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Number of customers with accounts in first  3 months.
+
+```{r}
+valueBox(75000,color = "grey",icon="fas fa-users")
+```
+
+### Number of customers joined per  3 months
+
+```{r}
+ss<-dbGetQuery(con,'select * from dbo.Customer')
+ss$RegistrationDate<-months(as.Date(ss$RegistrationDate))
+ss$RegistrationDate<-as.factor(ss$RegistrationDate)
+lv<-c("March","April","May","June","July","August","September")
+ss$RegistrationDate<-factor(ss$RegistrationDate,levels=lv)
+ss<-ss%>%filter(RegistrationDate=="March"|RegistrationDate=="April"|RegistrationDate=="May")%>%
+  group_by(RegistrationDate)%>%
+  summarise(c=n())
+txt<-c(ss$c)
+ss%>%ggplot(aes(x=RegistrationDate,y=c))+
+  geom_col()+geom_label(label=txt,
+                        color="black",
+            fontface="bold")+
+  ylab("Number of customers")+ xlab("Month")+labs(subtitle=" Representation of the amount of users joined for first 3 months.")+ theme_bw()
+
+
+```
+
+
+### Number of avaliable places using in a prototype.
+
+```{r}
+valueBox(12,color = "blue",icon="fas fa-atlas")
+```
+
+
+
+
+### Number of young people joined the website per 3 months
+
+```{r}
+ss1<-dbGetQuery(con,"select CustID,datediff(YEAR,DOB,Getdate()) as age,RegistrationDate,Nationality,
+iif(datediff(YEAR,DOB,Getdate())<=18,'<18',
+iif (datediff(YEAR,DOB,Getdate())>18 and datediff(YEAR,DOB,Getdate())<=21,'19-21',
+iif (datediff(YEAR,DOB,Getdate())>21 and datediff(YEAR,DOB,Getdate())<=25,'22-25',
+iif (datediff(YEAR,DOB,Getdate())>=26,'26+','unknown')))) as agegroup
+from dbo.Customer
+")
+ss1$RegistrationDate<-as.factor(ss1$RegistrationDate)
+ss1$RegistrationDate<-months(as.Date(ss1$RegistrationDate))
+lv<-c("March","April","May","June","July","August","September")
+ss1$RegistrationDate<-factor(ss1$RegistrationDate,levels=lv)
+ss6<-ss1%>%filter(agegroup=="<18"|agegroup=="19-21"|agegroup=="22-25")
+ss6<-ss6%>%
+  filter(RegistrationDate=="March"|RegistrationDate=="April"|RegistrationDate=="May")%>%
+  group_by(RegistrationDate,agegroup)%>%
+  summarise(c=n())%>%mutate(total=c*100/sum(c))
+txt<-c(round(ss6$total))
+ss6 <- ss6%>%ggplot(aes(x=RegistrationDate,y=total,fill=agegroup))+ geom_col(position="dodge")+
+  geom_label(aes(label=txt),
+             color="black",
+            fontface="bold",position=position_dodge(0.9))+
+  aes(fill=agegroup)+
+  scale_fill_manual(values = c("darkviolet","dodgerblue","greenyellow"))+
+             ylab("Percent of customers")+ xlab("Registration date")+
+   labs(subtitle="Groups from 18 to 25 of customers that joined our website in the first 3 months.")+ theme_bw()
+
+ggplotly(ss6)
+```
+
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Percentage of customers that are satisfied with the work in 3 months.
+
+```{r}
+valueBox(62,color = "orange",icon="fas fa-comment-dots")
+```
+
+
+
+### Satisfactory level per 3 months
+
+```{r}
+
+ss1<-dbGetQuery(con,"select CustID,datediff(YEAR,DOB,Getdate()) as age,RegistrationDate,Nationality,
+iif(datediff(YEAR,DOB,Getdate())<=18,'<18',
+iif (datediff(YEAR,DOB,Getdate())>18 and datediff(YEAR,DOB,Getdate())<=21,'19-21',
+iif (datediff(YEAR,DOB,Getdate())>21 and datediff(YEAR,DOB,Getdate())<=25,'22-25',
+iif (datediff(YEAR,DOB,Getdate())>=26,'26+','unknown')))) as agegroup
+from dbo.Customer
+")
+ss1$RegistrationDate<-as.factor(ss1$RegistrationDate)
+ss1$RegistrationDate<-months(as.Date(ss1$RegistrationDate))
+ff<-dbGetQuery(con,"select *
+               from dbo.Feedback")
+ss0<-ss1%>%left_join(ff,by = "CustID")
+ss0$RegistrationDate<-as.factor(ss1$RegistrationDate)
+lv<-c("March","April","May","June","July","August","September")
+ss0$RegistrationDate<-factor(ss1$RegistrationDate,levels=lv)
+ss01<-ss0%>%filter(RegistrationDate=="March"|RegistrationDate=="April"|RegistrationDate=="May")%>%
+  group_by(RegistrationDate,feedback)%>%
+  summarise(c=n())%>%mutate(total=c*100/sum(c))
+#ss00<-pivot_wider(ss00,names_from = feedback,values_from = c)
+#ss00<-ss00%>%mutate(total=Satisfied+`Not Satisfied`)
+txt<-c(round(ss01$total))
+ss01 <-ss01%>%ggplot(aes(x=RegistrationDate,y=total,fill=feedback))+
+  geom_col(position="dodge")+geom_label(label=txt,
+                                        color="black",
+            fontface="bold",position=position_dodge(0.9))+
+  ylab("Number of customers")+ 
+  xlab("Registration date")+
+  labs(subtitle="A satisfactory level recieved from our customers in the first 3 months of work.")+ theme_bw()
+
+ ggplotly(ss01)
+#change data satisfaction
+```
+
+
+
+
+### Description
+
+
+We attempted to view the early steps of our website's operating process using such key performance indicators. We introduced acknowledge our customers, their age groups, the satisfactory levels that they found acceptable, our locations, and the routes that were generated as a beginning progression in the amount of three months.
+
+Following that, we wanted to see how our customers grew and what age group they were in. To do so, we looked at the number of customers who joined our website and created an account with us, then we gathered significant information about them, including their date of birth, which we identified and grouped by age.Based on that, we created two graphs: one to show the number of customers who joined us during the first three months of our website's operation, and another to provide a % estimation based on the age range of 18 to 25, in which we show the percentage amount of consumers by age grouping.
+ 
+Then we wanted to devote some key performance indicators to our website, where we opted to look at the places and routes that we supplied for our customers throughout the first three months of work to see where we were at.As a result, one of the graphs was created based on the number of available places that we put on our website, and the other was created based on the number of routes that our customers created. We decided to display the data as a percentage result to see a better change and so that such a key performance indicator could be evaluated more easily over time.
+ 
+The last aspect of our success that we wanted to highlight was our degree of effort; as a result, we gathered information from our customers' comments and overall reviews placed on our online platform.Based on such information, we continued to construct a graph with a satisfactory level that indicates a percentage representation of customers who are satisfied with our work and those who are not. As a result, we may continue to develop and improve our client service.
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Percentage of particapants in a group of 18 to 25 in 3 months. 
+
+```{r}
+valueBox(55,color = "deeppink",icon="fas fa-user-edit")
+```
+
+
+
+### Amount of locations per 3 months
+
+```{r}
+rr<-dbGetQuery(con,"select * from dbo.Location")
+rr$Location_date<-months(as.Date(rr$Location_date))
+lv<-c("March","April","May","June","July","August","September")
+rr$Location_date<-factor(rr$Location_date,levels=lv)
+rr1<-rr%>%group_by(Location_date)%>%summarise(c=n())
+txt<-c(rr1$c)
+rr<- rr%>%group_by(Location_date,LocationName)%>%
+ggplot(aes(x=Location_date,fill=LocationName))+
+geom_bar()+
+ylab("Number of locations")+ xlab("Location date")+
+labs(subtitle="Amount of locations that were used in the first 3 months of work.")+ theme_bw()
+
+ ggplotly(rr)
+```
+
+
+
+
+### Percentage of routes generated in first 3 months.
+
+```{r}
+valueBox(75,color = "lime",icon="fas fa-map")
+```
+
+
+
+### Number of routes generated per 3 months
+
+```{r}
+
+cc<-dbGetQuery(con,"select CustomerID,RouteID,Route_date
+               from dbo.Taken_Route")
+cc$Route_date<-months(as.Date(cc$Route_date))
+cc$Route_date<- as.factor(cc$Route_date)
+lv<-c("March","April","May")
+cc$Route_date<-factor(cc$Route_date,levels=lv)
+cc<-cc%>%filter(Route_date=="March"|Route_date=="April"|Route_date=="May")%>%group_by(Route_date)%>%
+  summarise(c=n())
+txt<-c(round(cc$c*100/sum(cc$c),digits = 0))
+cc%>%ggplot(aes(x=Route_date,y=c*100/sum(c),group=1))+
+  geom_line()+
+  ylab("Percent of routes")+ xlab("Route  date")+geom_label(aes(label = txt),
+                                                             color="black",
+            fontface="bold")+
+     labs(subtitle="Generated number of routes based on the first 3 months of work.")
+
+   #geom_text(aes(label = c), data =best_in_class )
+```
+
+
